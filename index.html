@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="Calendarstyle.css">
+    <link rel="icon" href="images/image.png" type="image/x-icon">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Calendar -->
+            <div class="col-lg-9 col-md-8">
+                <div class="calendar-container">
+                    <!-- Calendar Header -->
+                    <div class="calendar-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <button class="calendar-nav-btn me-3" onclick="changeMonth(-1)">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <h2 class="mb-0" id="currentMonth">June 2025</h2>
+                                <button class="calendar-nav-btn ms-3" onclick="changeMonth(1)">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-light btn-sm me-2" onclick="goToToday()">
+                                    <i class="fas fa-calendar-day me-1"></i>Today
+                                </button>
+                                <button class="btn btn-success btn-sm" onclick="showAddEventModal()">
+                                    <i class="fas fa-plus me-1"></i>Add Event
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Grid -->
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Day headers -->
+                        <div class="calendar-day-header">Sun</div>
+                        <div class="calendar-day-header">Mon</div>
+                        <div class="calendar-day-header">Tue</div>
+                        <div class="calendar-day-header">Wed</div>
+                        <div class="calendar-day-header">Thu</div>
+                        <div class="calendar-day-header">Fri</div>
+                        <div class="calendar-day-header">Sat</div>
+                        <!-- Calendar days will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Sidebar -->
+            <div class="col-lg-3 col-md-4">
+                <div class="events-sidebar">
+                    <h4 class="mb-3">
+                        <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                        Today's Events
+                    </h4>
+                    <div id="todayEvents">
+                        <!-- Today's events will be populated here -->
+                    </div>
+
+                    <h5 class="mt-4 mb-3">
+                        <i class="fas fa-clock me-2 text-warning"></i>
+                        Upcoming Events
+                    </h5>
+                    <div id="upcomingEvents">
+                        <!-- Upcoming events will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Event Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalTitle">
+                        <i class="fas fa-calendar-plus me-2"></i>Add New Event
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="eventTitle" class="form-label">
+                                        <i class="fas fa-heading me-1"></i>Event Title *
+                                    </label>
+                                    <input type="text" class="form-control" id="eventTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="eventCategory" class="form-label">
+                                        <i class="fas fa-tag me-1"></i>Category
+                                    </label>
+                                    <select class="form-select" id="eventCategory">
+                                        <option value="work">Work</option>
+                                        <option value="personal">Personal</option>
+                                        <option value="meeting">Meeting</option>
+                                        <option value="deadline">Deadline</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="eventDate" class="form-label">
+                                        <i class="fas fa-calendar me-1"></i>Date *
+                                    </label>
+                                    <input type="date" class="form-control" id="eventDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="eventStartTime" class="form-label">
+                                        <i class="fas fa-clock me-1"></i>Start Time
+                                    </label>
+                                    <input type="time" class="form-control" id="eventStartTime">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="eventEndTime" class="form-label">
+                                        <i class="fas fa-clock me-1"></i>End Time
+                                    </label>
+                                    <input type="time" class="form-control" id="eventEndTime">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">
+                                <i class="fas fa-align-left me-1"></i>Description
+                            </label>
+                            <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="eventLocation" class="form-label">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Location
+                                    </label>
+                                    <input type="text" class="form-control" id="eventLocation">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="eventReminder" class="form-label">
+                                        <i class="fas fa-bell me-1"></i>Reminder
+                                    </label>
+                                    <select class="form-select" id="eventReminder">
+                                        <option value="0">No reminder</option>
+                                        <option value="15">15 minutes before</option>
+                                        <option value="30">30 minutes before</option>
+                                        <option value="60">1 hour before</option>
+                                        <option value="1440">1 day before</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="eventAllDay">
+                            <label class="form-check-label" for="eventAllDay">
+                                All-day event
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="eventRecurring">
+                            <label class="form-check-label" for="eventRecurring">
+                                Recurring event
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" id="deleteEventBtn" style="display: none;" onclick="deleteEvent()">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveEvent()">
+                        <i class="fas fa-save me-1"></i>Save Event
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="Calendarscript.js"></script>
+</body>
+</html>
